@@ -13,12 +13,13 @@ class MojAuthFilter
     body = []
 
     user = validate_secure_token( env['HTTP_X_SECURE_TOKEN'] )
+    env.delete('HTTP_X_SECURE_TOKEN')
 
     unless user.nil?
+      env['HTTP_X_MOJ_USERID'] = user
       status, headers, body = @app.call(env)
-      headers['X-MOJ-USERID'] = user
     end
-    
+
     [status, headers, body]
   end
 

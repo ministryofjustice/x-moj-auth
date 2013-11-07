@@ -109,7 +109,7 @@ describe 'moj_auth Middleware' do
 
       it 'passes through the response body' do
         resp = Mojauth.get('/valid_route_on_api', :headers => @valid_secure_token_header)
-        resp.body.should eq 'API response'
+        resp.body.should eq 'Hello joe.bloggs@example.com'
       end
 
       it 'passes through the response headers' do
