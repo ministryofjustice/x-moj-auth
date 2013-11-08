@@ -4,8 +4,8 @@ require 'json'
 
 class MojPreAuthMethods < Sinatra::Base
 
-  @@username = 'joe'
-  @@password = 'bloggs'
+  @@username = 'joe.bloggs@example.com'
+  @@password = 's3kr!t'
   @@secure_token = '123456'
 
   post '/login' do
@@ -29,6 +29,10 @@ class MojPreAuthMethods < Sinatra::Base
   private
 
   def valid_login_credentials( params )
+    # puts params[:username]
+    # puts @@username
+    # puts params[:password]
+    # puts @@password
     (params[:username] == @@username && params[:password] == @@password)
   end
 
