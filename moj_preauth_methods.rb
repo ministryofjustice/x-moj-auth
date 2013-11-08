@@ -9,14 +9,12 @@ class MojPreAuthMethods < Sinatra::Base
   @@secure_token = '123456'
 
   post '/login' do
+    content_type "text/json"
     if valid_login_credentials( params )
       status 200
-      content_type "text/json"
       body ({:token => @@secure_token}.to_json)
     else
-      status 403
-      content_type "text/json"
-      body ({:error => 'bad login'}.to_json)
+      error 403, {:error => 'bad login'}.to_json
     end
   end
 
@@ -24,7 +22,7 @@ class MojPreAuthMethods < Sinatra::Base
     if valid_registration_details( params )
       status 201
     else
-      status 400
+      error 400
     end
   end
 
