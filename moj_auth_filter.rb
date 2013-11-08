@@ -13,18 +13,20 @@ class MojAuthFilter
   end
 
   def call( env )
+    @env = env
+
     status = 403
     headers = []
     body = []
 
-    user = validate_secure_token( env[HEADER_token] )
-    env = filter_sensitive_headers(env)
+    validate_secure_token
+    filter_sensitive_headers
 
-    unless user.nil?
-      env = add_userid_header( env, user )
-      env = add_user_role_header( env )
+    unless @user.nil?
+      add_userid_header
+      add_user_role_header
 
-      status, headers, body = @app.call(env)
+      status, headers, body = @app.call(@env)
     end
 
     [status, headers, body]
@@ -32,30 +34,25 @@ class MojAuthFilter
 
   private
 
-  def add_userid_header( env, user )
-    env[HEADER_user] = user
-    env
+  def add_userid_header
+    @env[HEADER_user] = @user
   end
 
-  def add_user_role_header( env )
+  def add_user_role_header
     if(@@user_roles)
-      env[HEADER_role] = @@user_roles
+      @env[HEADER_role] = @@user_roles
     end
-    env
   end
 
-  def filter_sensitive_headers(env)
-    env.delete(HEADER_token)
-    env.delete(HEADER_user)
-    env.delete(HEADER_role)
-    env
+  def filter_sensitive_headers
+    @env.delete(HEADER_token)
+    @env.delete(HEADER_user)
+    @env.delete(HEADER_role)
   end
 
-  def validate_secure_token( passed_token )
-    if passed_token == @@secure_token
-      return @@user_id
-    else
-      return nil
+  def validate_secure_token
+    if @env[HEADER_token] == @@secure_token
+      @user = @@user_id
     end
   end
 
