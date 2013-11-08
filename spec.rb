@@ -46,6 +46,10 @@ describe 'moj_auth Middleware' do
         resp = Mojauth.post('/logout')
         resp.code.should eq 403
       end
+      it 'returns no data' do
+        resp = Mojauth.post('/logout')
+        resp.body.should eq ''
+      end
     end
 
     describe '/change_password' do
@@ -53,10 +57,14 @@ describe 'moj_auth Middleware' do
         resp = Mojauth.post('/logout')
         resp.code.should eq 403
       end 
+      it 'returns no data' do
+        resp = Mojauth.post('/logout')
+        resp.body.should eq ''
+      end 
     end
 
     describe 'missing secure-token header' do
-      it 'returns 403' do
+      it 'returns 403 status code' do
         resp = Mojauth.get('/valid_route_on_api')
         resp.code.should eq 403
       end
@@ -68,7 +76,7 @@ describe 'moj_auth Middleware' do
     end
 
     describe 'invalid secure-token header' do
-      it 'returns 403' do
+      it 'returns 403 status code' do
         resp = Mojauth.get('/valid_route_on_api', :headers => {'x-secure-token' => 'bad-token'})
         resp.code.should eq 403
       end
@@ -109,13 +117,35 @@ describe 'moj_auth Middleware' do
 
       it 'passes through the response body' do
         resp = Mojauth.get('/valid_route_on_api', :headers => @valid_secure_token_header)
-        resp.body.should eq 'Hello joe.bloggs@example.com'
+        resp.body.should include('joe.bloggs@example.com')
       end
 
       it 'passes through the response headers' do
         resp = Mojauth.get('/valid_route_on_api', :headers => @valid_secure_token_header)
         resp.headers['Content-Type'].should eq 'custom/special'
       end      
+    end
+
+    describe 'roles enrichment' do
+      it 'adds x-user-id header' do
+        resp = Mojauth.get('/valid_route_on_api', :headers => @valid_secure_token_header)
+        resp.body.should include('joe.bloggs@example.com')
+      end
+
+      it 'adds x-user-role header' do
+        resp = Mojauth.get('/valid_route_on_api', :headers => @valid_secure_token_header)
+        resp.body.should include('doge')
+      end      
+
+      it 'filters x-user-id header provided by client' do
+        resp = Mojauth.get('/valid_route_on_api', :headers => {'x-user-id' => 'auth_bypass'}.merge(@valid_secure_token_header))
+        resp.body.should_not include('auth_bypass')
+      end
+
+      it 'filters x-user-role header provided by client' do
+        resp = Mojauth.get('/valid_route_on_api', :headers => {'x-user-role' => 'auth_bypass'}.merge(@valid_secure_token_header))
+        resp.body.should_not include('auth_bypass')
+      end
     end
   end
 
