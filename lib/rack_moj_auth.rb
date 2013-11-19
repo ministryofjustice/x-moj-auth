@@ -1,8 +1,10 @@
 require 'rack'
 require 'httparty'
 
-module Rack
-  class MojAuth
+require 'rack_moj_auth/railtie' if defined?(Rails)
+
+module RackMojAuth
+  class Middleware
 
     @@token_header = 'X-SECURE-TOKEN'
     @@role_header = 'X-USER-ROLES'

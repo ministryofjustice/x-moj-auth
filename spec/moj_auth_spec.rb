@@ -5,14 +5,14 @@ require 'webmock/rspec'
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'rack_moj_auth')
 
-describe 'Rack::MojAuth' do
+describe 'RackMojAuth::Middlware' do
   include Rack::Test::Methods
 
   before :all do
     backend = Proc.new { |env| code = env.has_key?('X-USER-ID') ? 200 : 500; [code, {'Content-Type' => "text/html"}, ['backend-application']] }
     builder = Rack::Builder.new
 
-    builder.use Rack::MojAuth
+    builder.use RackMojAuth::Middleware
     builder.run backend
     @app = builder.to_app
 
