@@ -24,4 +24,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rack-test', ">= 0.6.2"
   gem.add_development_dependency 'webmock', ">= 1.16.0"
   gem.add_development_dependency 'excon', ">=0.27.5"
+  gem.add_development_dependency 'pry'
 end
