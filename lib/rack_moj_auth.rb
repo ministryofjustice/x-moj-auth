@@ -27,7 +27,7 @@ module RackMojAuth
 
       filter_sensitive_headers  # remove user id headers from request
 
-      @env[@@user_header] = get_user[:id] # enrich headers with user object
+      @env[@@user_header] = @user[:email] # enrich headers with user object
 
       status, headers, body = @app.call(@env) # pass request through to backend
       [status, headers, body]
@@ -36,7 +36,10 @@ module RackMojAuth
   private
 
     def auth_proxy
-      r = HTTParty.get("http://auth.service") # etc...
+      url = @auth_service_url + '/' + @request.path_info.gsub(/^\/auth\//, '')
+      method = @request.request_method.downcase
+      data = @request.params
+      r = HTTParty.send(method, url, data)
       @response = Rack::Response.new(r.body, r.code, r.headers)
     end
 
@@ -46,18 +49,14 @@ module RackMojAuth
       @env.delete(@@user_header)
     end
 
-    def get_user
-      {id: @user['id']}
-    end
-
     def is_logged_in
       return false unless @env.has_key? @@token_header
 
       token = @env[@@token_header]
-      url = "#{@auth_service_url}/sessioncheck?token=#{token}"
-      auth = HTTParty.get(url)
-      @user = JSON.parse(auth.body || '{}')
-      return (auth.code == 200)
+      url = "#{@auth_service_url}/users/#{token}.json"
+      resp = HTTParty.get(url)
+      @user = JSON.parse(resp.body || '{}')
+      return (resp.code == 200)
     end
   end
 end
