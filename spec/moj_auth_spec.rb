@@ -9,7 +9,7 @@ describe 'RackMojAuth::Middlware' do
   include Rack::Test::Methods
 
   before :all do
-    backend = Proc.new { |env| code = env.has_key?('X-USER-ID') ? 200 : 500; [ code, {}, [] ] }
+    backend = Proc.new { |env| code = env.has_key?('X-USER-ID') ? 202 : 500; [ code, {}, [] ] }
     builder = Rack::Builder.new
 
     builder.use RackMojAuth::Middleware
@@ -51,7 +51,7 @@ describe 'RackMojAuth::Middlware' do
       .to_return(status: 200, body: {id: 'user-id'}.to_json, headers: {})
     response = @backend.post('/any_url', {'X-SECURE-TOKEN' => 'test'})
 
-    expect(response.status).to eql 200
+    expect(response.status).to eql 202
   end
 
 end
