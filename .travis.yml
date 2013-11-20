@@ -1,0 +1,11 @@
+language: ruby
+rvm:
+- 2.0.0
+script: bundle exec rspec spec
+notifications:
+  hipchat:
+    rooms:
+      secure: UqHnF+1VHLKhF9jMmiHl48HyAKZiMC64S3/glD2Qi7S1t+O4Olo4K8Mw5eMmxlhYjzV2Yxn1123vKsT2TTsEhd7STx2trWtQKHcj69eXs2vBHzX0FB1i31RbKq7QZrSUeD766T5RyhGPzHdOfLHQchhMq1OqQhqNeDb6V4JBx+8=
+    format: html
+    template:
+      - '%{message} (<a href="%{build_url}">details</a>/<a href="%{compare_url}">changes</a>) - build #%{build_number}, branch <a href="https://github.com/%{repository}/tree/%{branch}">%{branch}</a> of %{repository}'
