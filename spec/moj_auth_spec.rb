@@ -5,7 +5,7 @@ require 'webmock/rspec'
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'rack_moj_auth')
 
-describe 'RackMojAuth::Middlware' do
+describe 'RackMojAuth::Middleware' do
   include Rack::Test::Methods
 
   before :all do
@@ -37,9 +37,9 @@ describe 'RackMojAuth::Middlware' do
 
   it 'it bounces requests that have an invalid X-SECURE-TOKEN header' do
     stub_request(:get, "#{@auth_service_url}/sessioncheck")
-      .with(query: {"token" => "test"})
+      .with(query: {"token" => "fail"})
       .to_return(status: 403, body: '', headers: {})
-    response = @backend.post('/any_url', {'X-SECURE-TOKEN' => 'test'})
+    response = @backend.post('/any_url', {'X-SECURE-TOKEN' => 'fail'})
 
     expect(response.status).to eql 403
     expect(response.body).to be_empty
@@ -47,9 +47,9 @@ describe 'RackMojAuth::Middlware' do
 
   it 'it passes requests with a valid X-SECURE-TOKEN header' do
     stub_request(:get, "#{@auth_service_url}/sessioncheck")
-      .with(query: {"token" => "test"})
+      .with(query: {"token" => "pass"})
       .to_return(status: 200, body: {id: 'user-id'}.to_json, headers: {})
-    response = @backend.post('/any_url', {'X-SECURE-TOKEN' => 'test'})
+    response = @backend.post('/any_url', {'X-SECURE-TOKEN' => 'pass'})
 
     expect(response.status).to eql 202
   end
