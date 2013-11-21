@@ -1,8 +1,6 @@
 require 'rack'
 require 'httparty'
 
-require 'rack_moj_auth/railtie' if defined?(Rails)
-
 module RackMojAuth
   class Middleware
 
