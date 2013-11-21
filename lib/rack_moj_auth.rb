@@ -8,6 +8,17 @@ module RackMojAuth
     USER_ID = 'X-USER-ID'
   end
 
+  class PreventUnauthorisedAccess
+    def initialize(app)
+      @app = app
+    end
+
+    def call(env)
+      return [403, {}, []] unless env.has_key? RackMojAuth::Resources::USER_ID
+      @app.call(env)
+    end
+  end
+
   class Middleware
 
     def initialize( app )
