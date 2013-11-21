@@ -2,11 +2,13 @@ require 'rack'
 require 'httparty'
 
 module RackMojAuth
-  class Middleware
+  class Resources
+    SECURE_TOKEN = 'X-SECURE-TOKEN'
+    ROLES = 'X-USER-ROLES'
+    USER_ID = 'X-USER-ID'
+  end
 
-    @@token_header = 'X-SECURE-TOKEN'
-    @@role_header = 'X-USER-ROLES'
-    @@user_header = 'X-USER-ID'
+  class Middleware
 
     def initialize( app )
       @auth_service_url = ENV['auth_service_url'] || 'http://auth.service'
@@ -25,7 +27,7 @@ module RackMojAuth
 
       filter_sensitive_headers  # remove user id headers from request
 
-      @env[@@user_header] = @user[:email] # enrich headers with user object
+      @env[RackMojAuth::Resources::USER_ID] = @user[:email] # enrich headers with user object
 
       status, headers, body = @app.call(@env) # pass request through to backend
       [status, headers, body]
@@ -42,15 +44,15 @@ module RackMojAuth
     end
 
     def filter_sensitive_headers
-      @env.delete(@@token_header)
-      @env.delete(@@role_header)
-      @env.delete(@@user_header)
+      @env.delete(RackMojAuth::Resources::SECURE_TOKEN)
+      @env.delete(RackMojAuth::Resources::ROLES)
+      @env.delete(RackMojAuth::Resources::USER_ID)
     end
 
     def is_logged_in
-      return false unless @env.has_key? @@token_header
+      return false unless @env.has_key? RackMojAuth::Resources::SECURE_TOKEN
 
-      token = @env[@@token_header]
+      token = @env[RackMojAuth::Resources::SECURE_TOKEN]
       url = "#{@auth_service_url}/users/#{token}.json"
       resp = HTTParty.get(url)
       @user = JSON.parse(resp.body || '{}')
