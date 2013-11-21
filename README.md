@@ -15,4 +15,4 @@ Set the environment variable 'auth_service_url' to be the FQURL of your auth ser
 
 This Gem no longer auto-adds itself into a Rails middleware stack, so you'll need to add it yourself. One way of doing this is to add the following to ```config/application.rb```
 
-```config.middleware.use RackMojAuth::Midleware```
+```config.middleware.use RackMojAuth::Middleware```
