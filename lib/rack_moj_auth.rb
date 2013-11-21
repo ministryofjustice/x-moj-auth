@@ -1,6 +1,8 @@
 require 'rack'
 require 'httparty'
 
+require './rack_moj_auth/grape_middleware'
+
 module RackMojAuth
   class Resources
     SECURE_TOKEN = 'X-SECURE-TOKEN'
