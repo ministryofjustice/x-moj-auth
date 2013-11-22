@@ -12,7 +12,7 @@ describe 'RackMojAuth::Middleware' do
     backend = Proc.new { |env| code = env.has_key?('X-USER-ID') ? 202 : 500; [ code, {}, [] ] }
     builder = Rack::Builder.new
 
-    builder.use RackMojAuth::Middleware
+    builder.use RackMojAuth::ProxyMiddleware
     builder.run backend
     @app = builder.to_app
 
