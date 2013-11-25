@@ -33,7 +33,13 @@ module RackMojAuth
       url = @auth_service_url + '/' + @request.path_info.gsub(/^\/auth\//, '')
       method = @request.request_method.downcase
       data = @request.params
-      r = HTTParty.send(method, url, data)
+
+      if method.to_s[/post/i]
+        r = HTTParty.post(url, body: data)
+      else
+        r = HTTParty.send(method, url, data)
+      end
+
       @response = Rack::Response.new(r.body, r.code, r.headers)
     end
 
