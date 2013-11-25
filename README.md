@@ -11,6 +11,8 @@ to install the gem ```gem install rack_moj_auth-*.gem```
 
 to use the gem, add it to your gemfile ```gem 'rack_moj_auth'```
 
-There's some environment config required, but that still needs figuring out.
+Set the environment variable 'auth_service_url' to be the FQURL of your auth service, eg rails s auth_service_url='http://localhost:3000' or somesuch.
 
-The likely consequence of including this gem in your Rails project is that your request specs will all immedaitely fail.  Have fun with that ;)
+This Gem no longer auto-adds itself into a Rails middleware stack, so you'll need to add it yourself. One way of doing this is to add the following to ```config/application.rb```
+
+```config.middleware.use RackMojAuth::Middleware```
