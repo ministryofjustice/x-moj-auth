@@ -54,28 +54,28 @@ describe 'RackMojAuth::Middleware' do
 
     expect(response.status).to eql 200
     expect(JSON.parse(response.body)['authentication_token']).to eql "Pm2tbZfcwfD7B1jK_wzo"
-  end 
+  end
 
-  it 'it bounces requests that have no X-SECURE-TOKEN header' do
+  it 'it bounces requests that have no HTTP_SECURE_TOKEN header' do
     response = @backend.post('/any_url')
 
     expect(response.status).to eql 403
     expect(response.body).to be_empty
   end
 
-  it 'it bounces requests that have an invalid X-SECURE-TOKEN header' do
+  it 'it bounces requests that have an invalid HTTP_SECURE_TOKEN header' do
     stub_request(:get, "#{@auth_service_url}/users/invalid.json")
       .to_return(status: 401, body: {error: 'Invalid token'}.to_json, headers: {})
-    response = @backend.post('/any_url', {'X-SECURE-TOKEN' => 'invalid'})
+    response = @backend.post('/any_url', {'HTTP_SECURE_TOKEN' => 'invalid'})
 
     expect(response.status).to eql 403
     expect(response.body).to be_empty
   end
 
-  it 'it passes requests with a valid X-SECURE-TOKEN header' do
+  it 'it passes requests with a valid HTTP_SECURE_TOKEN header' do
     stub_request(:get, "#{@auth_service_url}/users/Pm2tbZfcwfD7B1jK_wzo.json")
       .to_return(status: 200, body: {email: "joe.bloggs@example.com", authentication_token: "Pm2tbZfcwfD7B1jK_wzo"}.to_json, headers: {})
-    response = @backend.post('/any_url', {'X-SECURE-TOKEN' => 'Pm2tbZfcwfD7B1jK_wzo'})
+    response = @backend.post('/any_url', {'HTTP_SECURE_TOKEN' => 'Pm2tbZfcwfD7B1jK_wzo'})
 
     expect(response.status).to eql 202
   end
