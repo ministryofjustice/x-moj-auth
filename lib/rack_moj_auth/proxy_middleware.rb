@@ -21,7 +21,7 @@ module RackMojAuth
 
       filter_sensitive_headers  # remove user id headers from request
 
-      @env[RackMojAuth::Resources::USER_ID] = @user[:email] # enrich headers with user object
+      @env[RackMojAuth::Resources::USER_ID] = @user_id # enrich headers with user object
 
       status, headers, body = @app.call(@env) # pass request through to backend
       [status, headers, body]
@@ -53,9 +53,9 @@ module RackMojAuth
       return false unless @env.has_key? RackMojAuth::Resources::SECURE_TOKEN
 
       token = @env[RackMojAuth::Resources::SECURE_TOKEN]
-      url = "#{@auth_service_url}/users/#{token}.json"
+      url = "#{@auth_service_url}/users/#{token}"
       resp = HTTParty.get(url)
-      @user = JSON.parse(resp.body || '{}')
+      @user_id = resp.headers[RackMojAuth::Resources::USER_ID]
       return (resp.code == 200)
     end
   end
