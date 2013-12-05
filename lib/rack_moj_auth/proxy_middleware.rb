@@ -40,7 +40,7 @@ module RackMojAuth
         r = HTTParty.send(method, url, data)
       end
 
-      @response = Rack::Response.new(r.body, r.code, r.headers)
+      @response = Rack::Response.new(r.body || [], r.code, r.headers)
     end
 
     def filter_sensitive_headers
