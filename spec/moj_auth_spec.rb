@@ -56,6 +56,13 @@ describe 'RackMojAuth::Middleware' do
     expect(response.headers[RackMojAuth::Resources::USER_ID]).to eql "joe.bloggs@example.com"
   end
 
+  it 'proxies get requests to sign out' do
+    stub_request(:delete, "#{@auth_service_url}/sessions/Pm2tbZfcwfD7B1jK_wzo").to_return(status: 204, body: nil)
+    response = @backend.delete('/auth/sessions/Pm2tbZfcwfD7B1jK_wzo')
+
+    expect(response.status).to eql 204
+  end
+
   it 'it bounces requests that have no HTTP_SECURE_TOKEN header' do
     response = @backend.post('/any_url')
 
