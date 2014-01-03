@@ -14,7 +14,7 @@ module RackMojAuth
       @request = Rack::Request.new(@env)
       @response = nil
 
-      auth_proxy if /^\/auth\//.match @request.path_info
+      auth_proxy if /\A\/auth\//.match @request.path_info
       return @response.finish if @response
 
       return [403, {}, []] unless is_logged_in
